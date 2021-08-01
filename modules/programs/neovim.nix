@@ -129,6 +129,15 @@ in {
         '';
       };
 
+      generatedConfigViml = mkOption {
+        type = types.lines;
+        visible = true;
+        readOnly = true;
+        description = ''
+          Generated vimscript config.
+        '';
+      };
+
       extraPython3Packages = mkOption {
         type = with types; either extraPython3PackageType (listOf package);
         default = (_: [ ]);
@@ -291,11 +300,13 @@ in {
 
     home.packages = [ cfg.finalPackage ];
 
+    programs.neovim.generatedConfigViml = ''
+      ${neovimConfig.initExtra}
+      ${neovimConfig.neovimRcContent}
+    '';
+
     xdg.configFile."nvim/init.vim" = mkIf (neovimConfig.neovimRcContent != "") {
-      text = ''
-        ${neovimConfig.initExtra}
-        ${neovimConfig.neovimRcContent}
-      '';
+      text = config.programs.neovim.generatedConfigViml;
     };
 
     xdg.configFile."nvim/coc-settings.json" = mkIf cfg.coc.enable {
