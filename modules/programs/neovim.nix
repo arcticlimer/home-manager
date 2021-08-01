@@ -79,6 +79,14 @@ in {
         '';
       };
 
+      initExtra = mkOption {
+        type = types.lines;
+        default = "";
+        description = ''
+          Configuration to insert on the top of init.vim
+        '';
+      };
+
       vimAlias = mkOption {
         type = types.bool;
         default = false;
@@ -129,15 +137,6 @@ in {
         description = ''
           A function in python.withPackages format, which returns a
           list of Python 3 packages required for your plugins to work.
-        '';
-      };
-
-      generatedConfigViml = mkOption {
-        type = types.lines;
-        visible = true;
-        readOnly = true;
-        description = ''
-          Generated vimscript config.
         '';
       };
 
@@ -277,6 +276,7 @@ in {
       plugins = cfg.plugins
         ++ optionals cfg.coc.enable [ pkgs.vimPlugins.coc-nvim ];
       customRC = cfg.extraConfig;
+      initExtra = cfg.initExtra;
     };
 
   in mkIf cfg.enable {
@@ -289,13 +289,15 @@ in {
         configure.customRC -> programs.neovim.extraConfig
     '';
 
-    programs.neovim.generatedConfigViml = neovimConfig.neovimRcContent;
-
     home.packages = [ cfg.finalPackage ];
 
     xdg.configFile."nvim/init.vim" = mkIf (neovimConfig.neovimRcContent != "") {
-      text = neovimConfig.neovimRcContent;
+      text = ''
+        ${neovimConfig.initExtra}
+        ${neovimConfig.neovimRcContent}
+      '';
     };
+
     xdg.configFile."nvim/coc-settings.json" = mkIf cfg.coc.enable {
       source = jsonFormat.generate "coc-settings.json" cfg.coc.settings;
     };
