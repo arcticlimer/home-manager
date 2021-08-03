@@ -285,7 +285,6 @@ in {
       plugins = cfg.plugins
         ++ optionals cfg.coc.enable [ pkgs.vimPlugins.coc-nvim ];
       customRC = cfg.extraConfig;
-      initExtra = cfg.initExtra;
     };
 
   in mkIf cfg.enable {
@@ -301,12 +300,12 @@ in {
     home.packages = [ cfg.finalPackage ];
 
     programs.neovim.generatedConfigViml = ''
-      ${neovimConfig.initExtra}
+      ${cfg.initExtra}
       ${neovimConfig.neovimRcContent}
     '';
 
     xdg.configFile."nvim/init.vim" = mkIf (neovimConfig.neovimRcContent != "") {
-      text = config.programs.neovim.generatedConfigViml;
+      text = cfg.generatedConfigViml;
     };
 
     xdg.configFile."nvim/coc-settings.json" = mkIf cfg.coc.enable {
