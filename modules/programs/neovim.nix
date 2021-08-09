@@ -307,7 +307,7 @@ in {
     programs.neovim.generatedConfigViml = neovimConfig.neovimRcContent;
 
     xdg.configFile."nvim/init.vim" = mkIf (neovimConfig.neovimRcContent != "") {
-      text = cfg.generatedConfigViml;
+      text = neovimConfig.neovimRcContent;
     };
 
     xdg.configFile."nvim/coc-settings.json" = mkIf cfg.coc.enable {
