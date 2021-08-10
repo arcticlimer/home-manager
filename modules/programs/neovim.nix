@@ -53,7 +53,7 @@ let
         (map (x: if x ? plugin && x.optional == true then x.plugin else null)
           cfg.plugins);
     };
-    beforePlugins = "";
+    # beforePlugins = "";
   };
 
   extraMakeWrapperArgs = lib.optionalString (cfg.extraPackages != [ ])
